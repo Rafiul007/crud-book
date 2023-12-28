@@ -3,10 +3,14 @@ const express = require("express");
 const Book = require("../Models/book.model") 
 const router = express.Router();
 
+router.get('/test', (req,res)=>{
+  res.send('routing testing')
+})
+
 // route to save a new book
 router.post("/", async (req, res) => {
   try {
-    if (!req.body.title || !req.body.author || req.body.publishYear) {
+    if (!req.body.title || !req.body.author || !req.body.publishYear) {
       return res.status(400).json({ message: "Missing fields" });
     }
     // new book object
@@ -17,6 +21,7 @@ router.post("/", async (req, res) => {
     };
     // create the new book and add it to our database
     const book = await Book.create(newbook);
+    console.log(book);
     return res.status(201).send(book);
   } catch (err) {
     console.log(err.message);
@@ -29,6 +34,10 @@ router.get("/", async (req, res) => {
   try {
     const books = await Book.find();
     res.status(200).send(books);
+    console.log(books)
+    if(!books){
+      res.status(404).send('No Books Found')
+    }
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ message: "Error getting books." });
